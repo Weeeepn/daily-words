@@ -4,6 +4,7 @@ import re
 import urllib.request
 from datetime import datetime
 
+# 取得金鑰並自動清理前後空格與換行
 api_key = os.environ.get("GEMINI_API_KEY", "").strip().strip("'").strip('"')
 if not api_key:
     raise ValueError("找不到 GEMINI_API_KEY，請確認 GitHub Secrets 設定！")
