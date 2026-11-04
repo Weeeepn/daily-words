@@ -4,8 +4,13 @@ import re
 from datetime import datetime
 from google import genai
 
-# 初始化新版官方 Client
-client = genai.Client()
+# 取得金鑰並自動去除頭尾空白、換行與引號
+api_key = os.environ.get("GEMINI_API_KEY", "").strip().strip("'").strip('"')
+
+if not api_key:
+    raise ValueError("找不到 GEMINI_API_KEY，請確認 GitHub Secrets 設定！")
+
+client = genai.Client(api_key=api_key)
 
 json_path = "data/words.json"
 existing_words = []
@@ -17,7 +22,7 @@ if os.path.exists(json_path):
         except Exception:
             existing_words = []
 
-history_list = [w["word"] for w in existing_words[:60]]
+history_list = [w.get("word", "") for w in existing_words[:60]]
 today_str = datetime.now().strftime("%Y-%m-%d")
 
 prompt = f"""
@@ -39,8 +44,9 @@ prompt = f"""
 }}
 """
 
+# 使用普遍支援的 gemini-1.5-flash 模型呼叫
 response = client.models.generate_content(
-    model="gemini-2.5-flash",
+    model="gemini-1.5-flash",
     contents=prompt,
 )
 
