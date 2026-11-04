@@ -17,9 +17,6 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: 安裝所需套件
-        run: pip install google-genai
-
       - name: 執行 AI 腳本生成單字
         env:
           GEMINI_API_KEY: ${{ secrets.AI_API_KEY }}
