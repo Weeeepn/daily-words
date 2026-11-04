@@ -1,16 +1,12 @@
 import json
 import os
 import re
+import urllib.request
 from datetime import datetime
-from google import genai
 
-# 取得金鑰並自動去除頭尾空白、換行與引號
 api_key = os.environ.get("GEMINI_API_KEY", "").strip().strip("'").strip('"')
-
 if not api_key:
     raise ValueError("找不到 GEMINI_API_KEY，請確認 GitHub Secrets 設定！")
-
-client = genai.Client(api_key=api_key)
 
 json_path = "data/words.json"
 existing_words = []
@@ -44,13 +40,19 @@ prompt = f"""
 }}
 """
 
-# 使用普遍支援的 gemini-1.5-flash 模型呼叫
-response = client.models.generate_content(
-    model="gemini-1.5-flash",
-    contents=prompt,
-)
+url = f"[https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=](https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=){api_key}"
+headers = {"Content-Type": "application/json"}
+payload = {
+    "contents": [{
+        "parts": [{"text": prompt}]
+    }]
+}
 
-raw_text = response.text.strip()
+req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers=headers)
+with urllib.request.urlopen(req) as res:
+    res_data = json.loads(res.read().decode("utf-8"))
+
+raw_text = res_data["candidates"][0]["content"]["parts"][0]["text"].strip()
 clean_text = re.sub(r"^```json\s*|\s*```$", "", raw_text, flags=re.MULTILINE).strip()
 new_word = json.loads(clean_text)
 
