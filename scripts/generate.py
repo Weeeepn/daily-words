@@ -2,17 +2,11 @@ import json
 import os
 import re
 from datetime import datetime
-import google.generativeai as genai
+from google import genai
 
-# 1. 取得 API Key 並自動去除所有前後空白與換行符號
-api_key = os.environ.get("AI_API_KEY", "").strip()
-if not api_key:
-    raise ValueError("找不到 AI_API_KEY，請確認 GitHub Secrets 是否有正確設定！")
+# 初始化新版官方 Client
+client = genai.Client()
 
-genai.configure(api_key=api_key)
-model = genai.GenerativeModel("gemini-1.5-flash")
-
-# 2. 讀取現有單字
 json_path = "data/words.json"
 existing_words = []
 
@@ -26,7 +20,6 @@ if os.path.exists(json_path):
 history_list = [w["word"] for w in existing_words[:60]]
 today_str = datetime.now().strftime("%Y-%m-%d")
 
-# 3. 提示詞設定
 prompt = f"""
 你是一位專業的英文教學老師。請推薦一個適合中高階程度（托福、雅思、職場實用）的英文單字。
 今天的日期是：{today_str}。
@@ -46,8 +39,11 @@ prompt = f"""
 }}
 """
 
-# 4. 生成並解析
-response = model.generate_content(prompt)
+response = client.models.generate_content(
+    model="gemini-2.5-flash",
+    contents=prompt,
+)
+
 raw_text = response.text.strip()
 clean_text = re.sub(r"^```json\s*|\s*```$", "", raw_text, flags=re.MULTILINE).strip()
 new_word = json.loads(clean_text)
