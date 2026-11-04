@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>每日單字 Daily Word</title>
+  <style>
+    :root { --primary: #2563eb; --bg: #f8fafc; --card: #ffffff; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: #1e293b; max-width: 600px; margin: 40px auto; padding: 0 16px; line-height: 1.6; }
+    h1 { text-align: center; font-size: 1.6rem; margin-bottom: 24px; }
+    .card { background: var(--card); border-radius: 16px; padding: 24px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.07); border: 1px solid #e2e8f0; }
+    .header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; }
+    .word { font-size: 2.2rem; font-weight: 700; color: var(--primary); }
+    .phonetic { color: #64748b; font-size: 1rem; }
+    .pos { color: #0284c7; font-weight: 600; font-size: 0.9rem; }
+    .speak-btn { background: #eff6ff; border: none; border-radius: 50%; width: 34px; height: 34px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+    .def-zh { font-size: 1.25rem; font-weight: 600; margin-bottom: 8px; }
+    .def-en { color: #475569; margin-bottom: 16px; }
+    .example-box { background: #f1f5f9; border-left: 4px solid var(--primary); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 16px; }
+    .tip { font-size: 0.85rem; color: #64748b; background: #fffbeb; padding: 8px 12px; border-radius: 6px; border: 1px solid #fef3c7; }
+    .history-title { margin-top: 40px; font-size: 1.1rem; color: #334155; }
+    .history-item { padding: 10px 0; border-bottom: 1px dashed #cbd5e1; font-size: 0.95rem; }
+  </style>
+</head>
+<body>
+  <h1>📘 每日單字學習</h1>
+  <div id="content">載入今日單字中...</div>
+
+  <script>
+    fetch('data/words.json')
+      .then(res => res.json())
+      .then(list => {
+        if (!list || list.length === 0) {
+          document.getElementById('content').innerHTML = '<p>目前尚無單字，請執行一次生成流程。</p>';
+          return;
+        }
+        const today = list[0];
+        document.getElementById('content').innerHTML = `
+          <div class="card">
+            <div class="header">
+              <span class="word">${today.word}</span>
+              <span class="phonetic">${today.phonetic}</span>
+              <span class="pos">[${today.part_of_speech}]</span>
+              <button class="speak-btn" onclick="speak('${today.word}')">🔊</button>
+            </div>
+            <div class="def-zh">${today.definition_zh}</div>
+            <div class="def-en">${today.definition_en}</div>
+            <div class="example-box">
+              <div>${today.example_en}</div>
+              <div style="color: #64748b; font-size: 0.9em; margin-top: 4px;">${today.example_zh}</div>
+            </div>
+            <div class="tip">💡 記憶提示：${today.etymology_tip}</div>
+          </div>
+          <div class="history-title">📚 歷史單字回顧</div>
+          <div>
+            ${list.slice(1).map(item => `
+              <div class="history-item">
+                <span style="color:#64748b; font-size: 0.85em;">${item.date}</span> · 
+                <strong>${item.word}</strong> (${item.part_of_speech}): ${item.definition_zh}
+              </div>
+            `).join('')}
+          </div>
+        `;
+      });
+
+    function speak(text) {
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'en-US';
+      window.speechSynthesis.speak(u);
+    }
+  </script>
+</body>
+</html>
