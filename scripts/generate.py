@@ -42,7 +42,7 @@ prompt = f"""
 }}
 """
 
-model = "gemini-2.5-flash"
+model = "gemini-3.8-flash"
 url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 headers = {"Content-Type": "application/json", "x-goog-api-key": api_key}
 payload = {
