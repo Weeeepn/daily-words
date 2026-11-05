@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import time
 import urllib.error
 import urllib.request
 from datetime import datetime
@@ -53,11 +54,21 @@ payload = {
 }
 
 req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers=headers)
-try:
-    with urllib.request.urlopen(req) as res:
-        res_data = json.loads(res.read().decode("utf-8"))
-except urllib.error.HTTPError as e:
-    raise RuntimeError(f"Gemini API 錯誤 {e.code}: {e.read().decode('utf-8', 'replace')}") from e
+max_attempts = 4
+for attempt in range(1, max_attempts + 1):
+    try:
+        with urllib.request.urlopen(req) as res:
+            res_data = json.loads(res.read().decode("utf-8"))
+        break
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", "replace")
+        # 429 / 5xx 多半是暫時性的（流量過高），等一下再試
+        if e.code in (429, 500, 502, 503, 504) and attempt < max_attempts:
+            wait = 30 * attempt
+            print(f"Gemini API {e.code}，{wait} 秒後重試（第 {attempt}/{max_attempts} 次）")
+            time.sleep(wait)
+            continue
+        raise RuntimeError(f"Gemini API 錯誤 {e.code}: {body}") from e
 
 raw_text = res_data["candidates"][0]["content"]["parts"][0]["text"].strip()
 clean_text = re.sub(r"^```json\s*|\s*```$", "", raw_text, flags=re.MULTILINE).strip()
