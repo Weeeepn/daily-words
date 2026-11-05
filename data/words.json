@@ -1,6 +1,17 @@
 [
   {
     "date": "2026-11-05",
+    "word": "discrepancy",
+    "phonetic": "/dɪˈskrep.ən.si/",
+    "part_of_speech": "n.",
+    "definition_en": "a difference or lack of compatibility between two or more facts, claims, or figures",
+    "definition_zh": "差異；不一致；出入",
+    "example_en": "The financial audit revealed a significant discrepancy between the reported revenue and the actual cash flow.",
+    "example_zh": "財務審計發現，申報的營收與實際現金流之間存在顯著差異。",
+    "etymology_tip": "字根 dis-（分離、相反）+ crepare（發出響聲、破裂），原指音律不合，引申為數字或事實上的「分歧與不一致」。"
+  },
+  {
+    "date": "2026-11-05",
     "word": "ameliorate",
     "phonetic": "/əˈmiːliəreɪt/",
     "part_of_speech": "v.",
