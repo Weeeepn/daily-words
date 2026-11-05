@@ -1,1 +1,13 @@
-[]
+[
+  {
+    "date": "2026-11-05",
+    "word": "ameliorate",
+    "phonetic": "/əˈmiːliəreɪt/",
+    "part_of_speech": "v.",
+    "definition_en": "to make a bad or unpleasant situation better; to improve.",
+    "definition_zh": "改善；改良；緩解",
+    "example_en": "The government enacted several new policies aimed at ameliorating the working conditions of healthcare professionals.",
+    "example_zh": "政府頒布了幾項新政策，旨在改善醫護專業人員的工作條件。",
+    "etymology_tip": "字根源自拉丁語 melior（更好），加上前綴 a-（朝向），字面意即「使其變得更好」。"
+  }
+]
