@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import urllib.error
 import urllib.request
 from datetime import datetime
 
@@ -41,17 +42,22 @@ prompt = f"""
 }}
 """
 
-url = f"[https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=](https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=){api_key}"
-headers = {"Content-Type": "application/json"}
+model = "gemini-2.5-flash"
+url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+headers = {"Content-Type": "application/json", "x-goog-api-key": api_key}
 payload = {
     "contents": [{
         "parts": [{"text": prompt}]
-    }]
+    }],
+    "generationConfig": {"responseMimeType": "application/json"},
 }
 
 req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers=headers)
-with urllib.request.urlopen(req) as res:
-    res_data = json.loads(res.read().decode("utf-8"))
+try:
+    with urllib.request.urlopen(req) as res:
+        res_data = json.loads(res.read().decode("utf-8"))
+except urllib.error.HTTPError as e:
+    raise RuntimeError(f"Gemini API 錯誤 {e.code}: {e.read().decode('utf-8', 'replace')}") from e
 
 raw_text = res_data["candidates"][0]["content"]["parts"][0]["text"].strip()
 clean_text = re.sub(r"^```json\s*|\s*```$", "", raw_text, flags=re.MULTILINE).strip()
