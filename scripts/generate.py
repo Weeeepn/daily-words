@@ -24,7 +24,6 @@ if os.path.exists(json_path):
 history_list = [w.get("word", "") for w in existing_words[:100]]
 today_str = datetime.now().strftime("%Y-%m-%d")
 
-# 提示詞修改：要求輸出 5 個單字的陣列
 prompt = f"""
 你是一位專業的英文教學老師。請推薦 5 個適合中高階程度（托福、雅思、職場實用）的英文單字。
 今天的日期是：{today_str}。
